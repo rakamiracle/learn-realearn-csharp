@@ -11,7 +11,9 @@ namespace learn_realearn.Services
             Multiply,
             Divide,
             Power,
-            Modulus
+            Modulus,
+            Logarithm,
+            Sinus
         }
 
         public static double Calculate(double num1, double num2, Operation operation)
@@ -24,6 +26,8 @@ namespace learn_realearn.Services
                 Operation.Divide => Divide(num1, num2),
                 Operation.Power => Power(num1, num2),
                 Operation.Modulus => Modulus(num1, num2),
+                Operation.Logarithm => Logarithm(num1, num2),
+                Operation.Sinus => Sinus(num1),
                 _ => throw new ArgumentException("Operation not supported")
             };
         }
@@ -41,6 +45,17 @@ namespace learn_realearn.Services
 
         public static double Power(double a, double b) => Math.Pow(a, b);
         public static double Modulus(double a, double b) => a % b;
+        public static double Logarithm(double a, double b)
+        {
+            if (a <= 0 || b <= 0 || b == 1)
+                throw new ArgumentException("Logarithm arguments must be positive and base cannot be 1");
+            return Math.Log(a, b);
+        }
+
+        public static double Sinus(double a)
+        {
+            return Math.Sin(a * Math.PI / 180);
+        }
 
         public static string GetOperationSymbol(Operation operation)
         {
@@ -52,6 +67,8 @@ namespace learn_realearn.Services
                 Operation.Divide => "÷",
                 Operation.Power => "^",
                 Operation.Modulus => "%",
+                Operation.Logarithm => "log",
+                Operation.Sinus => "sin",
                 _ => "?"
             };
         }

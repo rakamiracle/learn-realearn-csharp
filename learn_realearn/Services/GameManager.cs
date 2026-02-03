@@ -9,12 +9,14 @@ namespace learn_realearn.Services
         private readonly GameSettings _settings;
         private readonly Player _player;
         private readonly ScoreService _scoreService;
+        private readonly DeveloperTools _devTools;
 
         public GameManager()
         {
             _settings = new GameSettings();
             _player = new Player();
             _scoreService = new ScoreService();
+            _devTools = new DeveloperTools(_settings, _player, _scoreService);
 
             ConsoleHelper.Initialize(_settings);
         }
@@ -23,10 +25,24 @@ namespace learn_realearn.Services
         {
             ConsoleHelper.ShowHeader(_settings.AppName, _settings.Version);
 
+            if (_settings.DeveloperMode)
+            {
+                Console.ForegroundColor = _settings.DevColor;
+                Console.WriteLine("🛠️  Developer Mode: ACTIVE");
+                Console.ResetColor();
+            }
+
             Console.Write("Masukkan nama Anda: ");
             _player.Name = Console.ReadLine() ?? "Guest";
 
             ConsoleHelper.PrintSuccess($"\nSelamat datang, {_player.Name}!", _settings);
+
+            if (_player.Name.ToLower() == "developer")
+            {
+                Console.ForegroundColor = _settings.DevColor;
+                Console.WriteLine("Tip: Type 'dev' in main menu for developer tools!");
+                Console.ResetColor();
+            }
 
             bool continueRunning = true;
 
@@ -35,6 +51,12 @@ namespace learn_realearn.Services
                 ConsoleHelper.ShowMainMenu();
 
                 string choice = Console.ReadLine() ?? "";
+
+                if (choice.ToLower() == "dev")
+                {
+                    _devTools.ShowDeveloperMenu();
+                    continue;
+                }
 
                 switch (choice)
                 {
@@ -50,7 +72,7 @@ namespace learn_realearn.Services
                         ShowStatistics();
                         break;
 
-                    case "4": // MENU BARU: Fungsi Memori
+                    case "4":
                         ShowMemoryMenu();
                         break;
 
@@ -59,6 +81,10 @@ namespace learn_realearn.Services
                         break;
 
                     case "6":
+                        _devTools.ShowDeveloperMenu();
+                        break;
+
+                    case "7":
                         continueRunning = false;
                         ConsoleHelper.PrintSuccess("\nTerima kasih telah menggunakan kalkulator!", _settings);
                         break;
@@ -84,7 +110,6 @@ namespace learn_realearn.Services
         {
             try
             {
-                // FITUR BARU: Opsi gunakan memori
                 Console.Write("Gunakan memori? (M untuk gunakan, Enter untuk skip): ");
                 bool useMemory = (Console.ReadLine()?.ToUpper() == "M");
 
@@ -99,23 +124,32 @@ namespace learn_realearn.Services
                     num1 = InputHandler.GetNumber("Masukkan angka pertama: ");
                 }
 
-                double num2 = InputHandler.GetNumber("Masukkan angka kedua: ");
+                double num2 = 0;
+                var operation = CalculatorService.Operation.Add;
 
-                ConsoleHelper.ShowOperationMenu();
+                ConsoleHelper.ShowOperationMenu(_settings.EnableExperimentalFeatures);
                 string opChoice = Console.ReadLine() ?? "";
 
-                var operation = InputHandler.ParseOperationChoice(opChoice);
+                operation = InputHandler.ParseOperationChoice(opChoice, _settings.EnableExperimentalFeatures);
+
+                if (operation != CalculatorService.Operation.Sinus)
+                {
+                    num2 = InputHandler.GetNumber("Masukkan angka kedua: ");
+                }
+
                 var symbol = CalculatorService.GetOperationSymbol(operation);
 
                 double result = CalculatorService.Calculate(num1, num2, operation);
 
-                string expression = $"{num1} {symbol} {num2}";
+                string expression = operation == CalculatorService.Operation.Sinus
+                    ? $"{symbol}({num1}°)"
+                    : $"{num1} {symbol} {num2}";
+
                 _player.AddToHistory(expression, result);
 
                 ConsoleHelper.ShowResult(expression, result, _settings);
                 _scoreService.RecordCalculation(operation);
 
-                // FITUR BARU: Simpan hasil ke memori
                 Console.Write("\nSimpan hasil ke memori? (Y/N): ");
                 if (Console.ReadLine()?.ToUpper() == "Y")
                 {
@@ -129,7 +163,6 @@ namespace learn_realearn.Services
             }
         }
 
-        // FITUR BARU: Menu memori
         private void ShowMemoryMenu()
         {
             ConsoleHelper.ShowSectionHeader("FUNGSI MEMORI");
@@ -175,7 +208,6 @@ namespace learn_realearn.Services
                     break;
 
                 case "6":
-                    // Kembali
                     break;
 
                 default:
@@ -211,14 +243,23 @@ namespace learn_realearn.Services
         private void ShowHelp()
         {
             ConsoleHelper.ShowSectionHeader("BANTUAN");
-            Console.WriteLine("1. Kalkulator mendukung 6 operasi: +, -, ×, ÷, ^ (pangkat), % (sisa bagi)");
-            Console.WriteLine("2. Anda bisa melihat riwayat perhitungan di menu 2");
-            Console.WriteLine("3. Statistik penggunaan dapat dilihat di menu 3");
-            Console.WriteLine("4. Fungsi memori tersedia di menu 4");
-            Console.WriteLine("5. Input harus berupa angka (bisa desimal dengan titik)");
+            Console.WriteLine("1. Kalkulator mendukung operasi: +, -, ×, ÷, ^, %");
+            if (_settings.EnableExperimentalFeatures)
+            {
+                Console.WriteLine("   + Experimental: log, sin");
+            }
+            Console.WriteLine("2. Menu 2: Lihat riwayat perhitungan");
+            Console.WriteLine("3. Menu 3: Lihat statistik penggunaan");
+            Console.WriteLine("4. Menu 4: Fungsi memori (simpan/ambil nilai)");
+            Console.WriteLine("5. Menu 6: Developer tools (password: dev123)");
             Console.WriteLine("6. Quick commands: [angka] [command] [angka]");
             Console.WriteLine("   Contoh: 10 AVG 20, 5 PERCENT 20");
-            Console.WriteLine("7. Tekan Enter setelah setiap input");
+            Console.WriteLine("7. Tekan 'M' saat input angka untuk gunakan memori");
+            Console.WriteLine("8. Tekan 'dev' di main menu untuk akses cepat developer tools");
+            Console.WriteLine("\nShortcuts:");
+            Console.WriteLine("  • dev → Developer menu");
+            Console.WriteLine("  • M → Use memory");
+            Console.WriteLine("  • Y/N → Yes/No prompts");
         }
     }
 }

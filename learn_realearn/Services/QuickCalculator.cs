@@ -34,14 +34,12 @@ namespace learn_realearn.Services
                 {
                     var operation = parts[1].ToUpper();
 
-                    // Handle division by zero
                     if ((operation == "QUOT" || operation == "PERCENT") && num2 == 0)
                     {
                         result = double.NaN;
                         return true;
                     }
 
-                    // Handle sqrt with negative
                     if (operation == "SQRT" && num1 < 0)
                     {
                         result = double.NaN;

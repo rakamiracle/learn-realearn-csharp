@@ -9,8 +9,6 @@ namespace learn_realearn.Models
         public int TotalCalculations { get; set; } = 0;
         public DateTime FirstUsed { get; set; } = DateTime.Now;
         public List<CalculationHistory> History { get; set; } = new List<CalculationHistory>();
-
-        // FITUR BARU: Memori
         public double MemoryValue { get; set; } = 0;
 
         public class CalculationHistory
@@ -37,7 +35,6 @@ namespace learn_realearn.Models
             TotalCalculations++;
         }
 
-        // FITUR BARU: Method untuk memori
         public void MemoryStore(double value)
         {
             MemoryValue = value;

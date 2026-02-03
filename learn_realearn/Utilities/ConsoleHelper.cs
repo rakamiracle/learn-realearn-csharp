@@ -23,7 +23,6 @@ namespace learn_realearn.Utilities
             Console.WriteLine();
         }
 
-        // UPDATE: Menu dengan emoji
         public static void ShowMainMenu()
         {
             Console.WriteLine("\n📱 MENU UTAMA:");
@@ -32,11 +31,12 @@ namespace learn_realearn.Utilities
             Console.WriteLine("3. 📊 Lihat Statistik");
             Console.WriteLine("4. 💾 Fungsi Memori");
             Console.WriteLine("5. ❓ Bantuan");
-            Console.WriteLine("6. 🚪 Keluar");
-            Console.Write("\nPilih menu (1-6): ");
+            Console.WriteLine("6. 🛠️  Developer Tools");
+            Console.WriteLine("7. 🚪 Keluar");
+            Console.Write("\nPilih menu (1-7): ");
         }
 
-        public static void ShowOperationMenu()
+        public static void ShowOperationMenu(bool experimentalEnabled)
         {
             Console.WriteLine("\n🔢 PILIH OPERASI:");
             Console.WriteLine("1. Penjumlahan (+)");
@@ -45,7 +45,14 @@ namespace learn_realearn.Utilities
             Console.WriteLine("4. Pembagian (÷)");
             Console.WriteLine("5. Pangkat (^)");
             Console.WriteLine("6. Modulus/Sisa Bagi (%)");
-            Console.Write("\nPilih operasi (1-6): ");
+
+            if (experimentalEnabled)
+            {
+                Console.WriteLine("7. 🧪 Logaritma (log)");
+                Console.WriteLine("8. 🧪 Sinus (sin)");
+            }
+
+            Console.Write("\nPilih operasi: ");
         }
 
         public static void ShowResult(string expression, double result, GameSettings settings)
@@ -74,6 +81,13 @@ namespace learn_realearn.Utilities
         {
             Console.ForegroundColor = settings.ErrorColor;
             Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        public static void PrintDev(string message)
+        {
+            Console.ForegroundColor = _settings.DevColor;
+            Console.WriteLine($"🛠️  {message}");
             Console.ResetColor();
         }
     }

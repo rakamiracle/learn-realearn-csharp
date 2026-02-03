@@ -9,7 +9,6 @@ namespace learn_realearn.Services
             Console.Write(prompt);
             string input = Console.ReadLine() ?? "";
 
-            // FITUR BARU: Coba quick calculation
             if (QuickCalculator.TryQuickCalculate(input, out double quickResult))
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -18,7 +17,6 @@ namespace learn_realearn.Services
                 return quickResult;
             }
 
-            // Jika bukan quick command, parse sebagai angka biasa
             double number;
             while (!double.TryParse(input, out number))
             {
@@ -31,18 +29,36 @@ namespace learn_realearn.Services
             return number;
         }
 
-        public static CalculatorService.Operation ParseOperationChoice(string choice)
+        public static CalculatorService.Operation ParseOperationChoice(string choice, bool experimentalEnabled)
         {
-            return choice switch
+            if (experimentalEnabled)
             {
-                "1" => CalculatorService.Operation.Add,
-                "2" => CalculatorService.Operation.Subtract,
-                "3" => CalculatorService.Operation.Multiply,
-                "4" => CalculatorService.Operation.Divide,
-                "5" => CalculatorService.Operation.Power,
-                "6" => CalculatorService.Operation.Modulus,
-                _ => throw new ArgumentException("Pilihan operasi tidak valid")
-            };
+                return choice switch
+                {
+                    "1" => CalculatorService.Operation.Add,
+                    "2" => CalculatorService.Operation.Subtract,
+                    "3" => CalculatorService.Operation.Multiply,
+                    "4" => CalculatorService.Operation.Divide,
+                    "5" => CalculatorService.Operation.Power,
+                    "6" => CalculatorService.Operation.Modulus,
+                    "7" => CalculatorService.Operation.Logarithm,
+                    "8" => CalculatorService.Operation.Sinus,
+                    _ => throw new ArgumentException("Pilihan operasi tidak valid")
+                };
+            }
+            else
+            {
+                return choice switch
+                {
+                    "1" => CalculatorService.Operation.Add,
+                    "2" => CalculatorService.Operation.Subtract,
+                    "3" => CalculatorService.Operation.Multiply,
+                    "4" => CalculatorService.Operation.Divide,
+                    "5" => CalculatorService.Operation.Power,
+                    "6" => CalculatorService.Operation.Modulus,
+                    _ => throw new ArgumentException("Pilihan operasi tidak valid")
+                };
+            }
         }
     }
 }

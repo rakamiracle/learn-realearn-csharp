@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using learn_realearn.Models;
-using learn_realearn.Utilities;
 
 namespace learn_realearn.Services
 {
@@ -18,7 +17,9 @@ namespace learn_realearn.Services
                 { CalculatorService.Operation.Multiply, 0 },
                 { CalculatorService.Operation.Divide, 0 },
                 { CalculatorService.Operation.Power, 0 },
-                { CalculatorService.Operation.Modulus, 0 }
+                { CalculatorService.Operation.Modulus, 0 },
+                { CalculatorService.Operation.Logarithm, 0 },
+                { CalculatorService.Operation.Sinus, 0 }
             };
         }
 
@@ -54,7 +55,6 @@ namespace learn_realearn.Services
                 Console.WriteLine("  Belum ada operasi yang dilakukan");
             }
 
-            // Hitung persentase
             if (player.TotalCalculations > 0)
             {
                 Console.WriteLine("\n📈 Persentase:");
@@ -68,6 +68,12 @@ namespace learn_realearn.Services
                     }
                 }
             }
+        }
+
+        // New method for developer tools
+        public Dictionary<CalculatorService.Operation, int> GetOperationCounts()
+        {
+            return new Dictionary<CalculatorService.Operation, int>(_operationCounts);
         }
     }
 }
